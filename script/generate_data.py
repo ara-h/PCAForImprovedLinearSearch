@@ -6,33 +6,37 @@ from config import config
 
 rng = np.random.default_rng(seed=2022)
 
-d = 48 # number of dimensions (columns)
-n = 1000 # number of data (rows)
 
+def random_sample(d, N, scale, alpha=0.4, beta=0.4):
+    """
+    d : dimension of data, i.e. number of features in each observation
+    N : number of observations
+    scale : scale beta distribution to get different magnitudes in covariance
+    alpha : beta distribution shape parameter, must be > 0
+    beta : beta distribution shape parameter, must be > 0
 
-""" Generate a random covariance matrix. """
+    Default values for shape parameters chosen to illustrate a scenario where
+    there are both strong and weak associative relationships in the data
+    """
+    # Generate a random covariance matrix.
 
-# First, generate a real d by d matrix
-# Could add command line arguments to manipulate the distribution to sample
-U = 10.0 * rng.beta(a=0.4, b=0.4, size=(d,d))
-# Then, compute U^{T}U to get a real positive-definite matrix
-V = np.dot(U.T, U)
+    # First, generate a real d by d matrix
+    U = scale * rng.beta(a=alpha, b=beta, size=(d,d))
+    # Then, compute U^{T}U to get a real positive-definite matrix
+    V = np.dot(U.T, U)
 
+    # Use this matrix to specify a normal distribution. Draw N samples from it.
 
-""" Use this matrix to specify a normal distribution. Draw n samples from it. """
+    data = multivariate_normal.rvs(cov=V, size=N)
+    data = np.around(data, decimals=8)
 
-generated_data = multivariate_normal.rvs(cov=V, size=n)
-generated_data = np.around(generated_data, decimals=8)
+    return data
 
-
-""" Insert data into table of vectors """
 
 def insert_points(data):
-    """ data: n by d numpy array """
-
-
+    """ insert data into database """
     records = []
-    for i in range(0,n):
+    for i in range(0,np.shape(data)[0]):
         entry = (data[i,:]).tolist()
         records.append((entry,))
 
@@ -57,4 +61,4 @@ def insert_points(data):
 
 
 if __name__ == "__main__":
-    insert_points(generated_data)
+    pass

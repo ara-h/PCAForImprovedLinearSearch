@@ -66,8 +66,8 @@ def get_sorting_permutation(eigenvalues):
 
 def get_sorted_eigendecomposition(X):
     """
-    Assume X is the centered data matrix. Return W, the matrix describing the
-    desired transformation
+    Return W, the matrix describing the desired transformation
+    X : centered data matrix
     """
     C = np.cov(X.T)
     e_vals, e_vecs = np.linalg.eig(C)
@@ -87,7 +87,7 @@ def apply_PCA_transformation(X):
     return sample_mean, W, T
 
 
-if __name__ == "__main__":
+def upload_transformed_data():
     X, X_id = load_from_database()
 
     mu_hat, W, T = apply_PCA_transformation(X)

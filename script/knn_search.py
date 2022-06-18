@@ -6,15 +6,10 @@ from config import config
 
 rng = np.random.default_rng(seed=2022)
 
-d = 48 # number of dimensions
-Q = rng.uniform(low=-14.0, high=14.0, size=d)
-Q = np.around(Q, decimals=8)
-N = 1000 # number of rows in the database
-
 
 # Functions for loading the original data and the transformed data
 
-def matrix_loading_helper(matrix_entry_list):
+def matrix_loading_helper(matrix_entry_list, d):
     W = np.empty(shape=(d,d))
     for row in matrix_entry_list:
         W[row[0]][row[1]] = row[2]
@@ -32,7 +27,10 @@ def points_loading_helper(points_list):
     return ids, result
 
 
-def load_from_database():
+def load_from_database(d):
+    """
+    d : expected row length of transformation matrix
+    """
     conn = None
 
     try:
@@ -50,7 +48,7 @@ def load_from_database():
 
         cur.execute("SELECT * FROM TransformationMatrix")
         w_rows = cur.fetchall()
-        W = matrix_loading_helper(w_rows)
+        W = matrix_loading_helper(w_rows, d)
 
         cur.execute("SELECT * FROM MeanOffset ORDER BY sample_mean_id DESC LIMIT 1")
         mu_hat = (cur.fetchone())[1]
@@ -71,6 +69,9 @@ class CompareKV:
         self.key = key
         self.value = value
 
+    def __str__(self):
+        return f'Point<{self.key}, {self.value}>'
+
     def __lt__(self, other):
         return self.value < other.value
 
@@ -82,12 +83,14 @@ class CompareKV:
 
 
 # The nearest neighbors search
-def knn_search(x, ids, q, k):
+def knn_search(x, ids, q, k, d, N):
     """
     x : data
     ids : their primary keys
     q : the query vector
     k : number of nearest neighbors to return
+    d : data dimension
+    N : number of observations in data
     """
     iteration_tracker = 0
     h = [] # heap
@@ -128,20 +131,17 @@ def knn_search(x, ids, q, k):
     return result, iteration_tracker
 
 
-if __name__ == "__main__":
-    X_id, X, Y_id, Y, W, mu_hat = load_from_database()
+def run_comparison(d, N, K):
+    Q = rng.uniform(low=-14.0, high=14.0, size=d)
+    Q = np.around(Q, decimals=8)
 
-    result_1, it1 = knn_search(X, X_id, Q, 8)
+    X_id, X, Y_id, Y, W, mu_hat = load_from_database(d)
 
-    transformed_query = np.dot(W,np.asarray(Q) - np.asarray(mu_hat))
+    result_1, it1 = knn_search(X, X_id, Q, K, d, N)
 
-    result_2, it2 = knn_search(Y, Y_id, transformed_query, 8)
+    transformed_query = np.dot(np.asarray(Q) - np.asarray(mu_hat), W)
+
+    result_2, it2 = knn_search(Y, Y_id, transformed_query, K, d, N)
 
     print("Linear search in standard basis: " + str(it1) + " iterations")
-    group_1_avgdist = sum(np.linalg.norm(X[idx-1]- Q) for idx in result_1)/8
-    print("Average distance of nearest neighbors: " + str(group_1_avgdist))
-
-    print('\n')
     print("Linear search in new basis: " + str(it2) + " iterations")
-    group_2_avgdist = sum(np.linalg.norm(X[idx-1]- Q) for idx in result_2)/8
-    print("Average distance of nearest neighbors: " + str(group_2_avgdist))
