@@ -21,10 +21,10 @@ we do an arithmetic operation in each dimension:
 $$ d(q, x_i) = \sqrt{\sum_{j=1}^d (q_j - x_{i,j})^2} $$
 
 Say the worst candidate is distance $r$ from $q$. If the first summand is
-already greater than $r$, then the rest of the calculations in the sum are
+already greater than $r$, then the remaining calculations in the sum are
 redundant. We can skip over them and move on to the next candidate. The basic
 idea in the proposed algorithm observes that if there is a lot of variability
-in the first component, then it is more likely that we can skip the unnecessary
+in the first component, then it is more likely that we can skip unnecessary
 arithmetic operations. We can dimension sort by variance so the distance
 computation starts with most highly variable component and continues to the
 least variable component. Even better, we can find the principal components of
@@ -39,12 +39,20 @@ detect unnecessary operations early on.
 
 ## Demonstration
 
+A random covariance matrix is generated to specify a normal distribution from
+which multi-dimensional data are sampled (see script/generate_data.py). The
+following compare the number of iterations involved in the search procedure.
+
+![Bar chart for N = 1000, k = 8](img/n1000k8_results.png)
+
+![Bar chart for N = 10000, k = 1000](img/n10000k1000_results.png)
+
 ## Possible use cases
 
-If data is subject to change on relatively small time-scales, a program
+If data are subject to change on relatively small time-scales, a program
 application using this approach can be run periodically on a table of
 multi-dimensional data, creating a new table that offers performance benefits
-for the kNN search task.
+for the kNN search.
 
 ## References
 
