@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 
 
-
+# A database.ini file should be placed in this directory
 def config(filename="database.ini", section="postgresql"):
     parser = ConfigParser()
     parser.read(filename)
