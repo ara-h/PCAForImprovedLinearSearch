@@ -40,19 +40,16 @@ detect unnecessary operations early on.
 ## Demonstration
 
 A random covariance matrix is generated to specify a normal distribution from
-which multi-dimensional data are sampled (see script/generate_data.py). The
+which multi-dimensional data are sampled (see [script/generate_data](script/generate_data.py)). The
 following compare the number of iterations involved in the search procedure.
 
 ![Bar chart for N = 1000, k = 8](img/n1000k8_results.png)
 
 ![Bar chart for N = 10000, k = 1000](img/n10000k1000_results.png)
 
-## Possible use cases
-
 If data are subject to change on relatively small time-scales, a program
 application using this approach can be run periodically on a table of
-multi-dimensional data, creating a new table that offers performance benefits
-for the kNN search.
+multi-dimensional data, creating a new table that offers the described performance benefits.
 
 ## References
 
