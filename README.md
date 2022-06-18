@@ -18,7 +18,7 @@ candidate to be replaced is maintained at the root of the heap.
 When we come across a candidate vector $x_i$ and compute its distance from $q$,
 we do an arithmetic operation in each dimension:
 
-$$ d(q, x_i) = \sqrt{sum_{j=1}^d (q_j - x_{i,j})^2} $$
+$$ d(q, x_i) = \sqrt{\sum_{j=1}^d (q_j - x_{i,j})^2} $$
 
 Say the worst candidate is distance $r$ from $q$. If the first summand is
 already greater than $r$, then the rest of the calculations in the sum are
@@ -35,7 +35,7 @@ the sample covariance matrix. Computing the eigenvectors and sorting them
 descendingly by the size of their associated eigenvalues gives us an orthogonal
 transformation, one that preserves distances and angles between vectors.
 Applying this transformation to the data increases the likelihood that we can
-detect unnecessary operations early on. 
+detect unnecessary operations early on.
 
 ## Demonstration
 
